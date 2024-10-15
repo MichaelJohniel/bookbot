@@ -52,6 +52,33 @@ def chars_dict_to_sorted_list(num_chars_dict):
     sorted_list.sort(reverse=True, key=sort_on)
     return sorted_list      
 
+def get_chapters(text):
+    chapters = []
+    current_chapter = ""
+
+    # Read the book line by line and split it into chapters
+    for line in text.splitlines():
+
+        #  End of book
+        if "*** END" in line:
+            line = ""
+            chapters.append(current_chapter.strip())
+            return chapters
+        
+        # Split the book into chapters based on the "Chapter" keyword
+        if "Chapter" in line:
+            if current_chapter:
+                chapters.append(current_chapter.strip())
+            current_chapter = line+"\n"
+        else:
+            current_chapter += line+"\n"
+    
+    # Append the last chapter if book ends abruptly
+    if current_chapter:
+        chapters.append(current_chapter.strip())
+
+    return chapters
+
 def open_book():
     title = input("Enter the name of the book: ").strip().lower()
     text = get_book_text(title)
@@ -77,12 +104,30 @@ What would you like to do with {title.capitalize()}?
     while True:
         print(bookmenu)
         choice = input("Enter your choice: ").strip()
+        current_chapter = 0
 
         if choice == "1":
-            print(text)
+            chapters = get_chapters(text)
+            length = len(chapters)-1
+            print(f"Choose a chapter to read (1-{length})")
+            chapter_choice = int(input("Enter your choice: ").strip())
+            if chapter_choice in range(1, length+1):
+                current_chapter = chapter_choice
+            else:
+                print(f"Invalid chapter. Enter a number between 1 and {length}")
+                break
+
+            while current_chapter < length:
+                print(chapters[current_chapter])
+                current_chapter += 1
+                choice = input("Press Enter to continue reading... ").strip()
+                if choice == "":
+                    print(chapters[current_chapter])
+                else:
+                    break
             break
         elif choice == "2":
-            print(f"--- Begin report of {title.capitalize()} ---")
+            print(f"\n--- Begin report of {title.capitalize()} ---")
             print(f"{num_words} words found in {title.capitalize()}.\n")
 
             for item in chars_sorted_list:
