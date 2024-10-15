@@ -1,4 +1,5 @@
 import re
+import time
 
 mainmenu = """
 Welcome to BookBot
@@ -79,6 +80,12 @@ def get_chapters(text):
 
     return chapters
 
+def animate_text(text, delay=0.05):
+    for char in text:
+        print(char, end='', flush=True)
+        time.sleep(delay)
+    print()
+
 def open_book():
     title = input("Enter the name of the book: ").strip().lower()
     text = get_book_text(title)
@@ -118,11 +125,11 @@ What would you like to do with {title.capitalize()}?
                 break
 
             while current_chapter < length:
-                print(chapters[current_chapter])
+                animate_text(chapters[current_chapter])
                 current_chapter += 1
                 choice = input("Press Enter to continue reading... ").strip()
                 if choice == "":
-                    print(chapters[current_chapter])
+                    continue
                 else:
                     break
             break
